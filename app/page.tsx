@@ -1,3 +1,5 @@
+export const revalidate = 60;
+
 import { client } from '@/sanity/lib/client';
 import { homepageQuery } from '@/sanity/lib/queries';
 import { hasSanityConfig } from '@/sanity/env';
