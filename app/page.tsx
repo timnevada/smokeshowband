@@ -7,6 +7,16 @@ type LinkField = {
   href?: string;
 };
 
+type ShowField = {
+  venue?: string;
+  city?: string;
+  streetAddress?: string;
+  date?: string;
+  time?: string;
+  details?: string;
+  ticketLink?: string;
+};
+
 type HomepageData = {
   eyebrow?: string;
   title?: string;
@@ -14,6 +24,8 @@ type HomepageData = {
   footerText?: string;
   primaryLink?: LinkField;
   secondaryLink?: LinkField;
+  showsHeading?: string;
+  shows?: ShowField[];
 };
 
 const fallbackContent: HomepageData = {
@@ -25,6 +37,8 @@ const fallbackContent: HomepageData = {
     label: 'Open Studio',
     href: '/studio',
   },
+  showsHeading: 'Upcoming shows',
+  shows: [],
 };
 
 async function getHomepageData() {
@@ -37,6 +51,7 @@ async function getHomepageData() {
     return {
       ...fallbackContent,
       ...data,
+      shows: data?.shows || fallbackContent.shows,
     };
   } catch {
     return fallbackContent;
@@ -55,12 +70,30 @@ function ActionLink({ link, variant }: { link?: LinkField; variant: 'solid' | 'g
   );
 }
 
+function formatShowDate(value?: string) {
+  if (!value) {
+    return 'Date TBD';
+  }
+
+  const date = new Date(`${value}T00:00:00`);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(date);
+}
+
 export default async function HomePage() {
   const page = await getHomepageData();
 
   return (
     <main className="landing-shell">
-      <section className="landing-card">
+      <section className="hero-stack">
         <p className="landing-eyebrow">{page.eyebrow}</p>
         <h1 className="landing-title">{page.title}</h1>
         <p className="landing-tagline">{page.tagline}</p>
@@ -69,6 +102,33 @@ export default async function HomePage() {
           <ActionLink link={page.secondaryLink} variant="ghost" />
         </div>
       </section>
+
+      {page.shows && page.shows.length > 0 ? (
+        <section className="shows-panel">
+          <div className="shows-heading-wrap">
+            <p className="landing-eyebrow">Live</p>
+            <h2 className="shows-heading">{page.showsHeading}</h2>
+          </div>
+          <div className="shows-grid">
+            {page.shows.map((show, index) => (
+              <article className="show-card" key={`${show.date || 'show'}-${show.venue || 'venue'}-${index}`}>
+                <p className="show-date">{formatShowDate(show.date)}</p>
+                <h3 className="show-venue">{show.venue || 'Venue TBD'}</h3>
+                <p className="show-city">{show.city || 'City TBD'}</p>
+                {show.streetAddress ? <p className="show-address">{show.streetAddress}</p> : null}
+                {show.time ? <p className="show-time">{show.time}</p> : null}
+                {show.details ? <p className="show-details">{show.details}</p> : null}
+                {show.ticketLink ? (
+                  <a className="show-link" href={show.ticketLink}>
+                    Tickets
+                  </a>
+                ) : null}
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
       <p className="landing-footer">{page.footerText}</p>
     </main>
   );

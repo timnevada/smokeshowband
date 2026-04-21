@@ -6,5 +6,15 @@ export const homepageQuery = groq`*[_type == "homepage"][0]{
   tagline,
   footerText,
   primaryLink,
-  secondaryLink
+  secondaryLink,
+  showsHeading,
+  shows[]{
+    venue,
+    city,
+    streetAddress,
+    date,
+    time,
+    details,
+    ticketLink
+  }
 }`;
