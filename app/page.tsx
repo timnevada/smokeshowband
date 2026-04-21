@@ -106,7 +106,7 @@ export default async function HomePage() {
       {page.shows && page.shows.length > 0 ? (
         <section className="shows-panel">
           <div className="shows-heading-wrap">
-            <p className="landing-eyebrow">Live</p>
+            <p className="landing-eyebrow">Upcoming Shows:</p>
             <h2 className="shows-heading">{page.showsHeading}</h2>
           </div>
           <div className="shows-grid">
